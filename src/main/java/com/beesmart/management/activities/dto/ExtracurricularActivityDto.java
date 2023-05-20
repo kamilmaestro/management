@@ -1,6 +1,8 @@
 package com.beesmart.management.activities.dto;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public final class ExtracurricularActivityDto {
@@ -13,9 +15,10 @@ public final class ExtracurricularActivityDto {
   private final UUID teacherId;
   private final BigDecimal price;
   private final short durationInMinutes;
+  private final List<Instant> availableTerms;
 
-  public ExtracurricularActivityDto(UUID id, String name, String description, String type, String location,
-                                    UUID teacherId, BigDecimal price, short durationInMinutes) {
+  public ExtracurricularActivityDto(UUID id, String name, String description, String type, String location, UUID teacherId,
+                                    BigDecimal price, short durationInMinutes, List<Instant> availableTerms) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -24,6 +27,7 @@ public final class ExtracurricularActivityDto {
     this.teacherId = teacherId;
     this.price = price;
     this.durationInMinutes = durationInMinutes;
+    this.availableTerms = availableTerms;
   }
 
   public UUID getId() {
@@ -58,4 +62,7 @@ public final class ExtracurricularActivityDto {
     return durationInMinutes;
   }
 
+  public List<Instant> getAvailableTerms() {
+    return availableTerms;
+  }
 }

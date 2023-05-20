@@ -1,17 +1,25 @@
 package com.beesmart.management.activities.domain;
 
 import com.beesmart.management.activities.dto.ExtracurricularActivityDto;
-import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "extracurricular_activity_configuration")
+//@Type(name = "json", typeClass = JsonType.class)
 class ExtracurricularActivityConfiguration {
 
-  enum Type {
+  enum ActivityType {
     IN_PERSON,
     ONLINE
   }
@@ -23,17 +31,22 @@ class ExtracurricularActivityConfiguration {
   private String name;
   private String description;
   @Enumerated(EnumType.STRING)
-  private Type type;
+  private ActivityType type;
   private String location;
   private UUID teacherId;
   private BigDecimal price;
   private short durationInMinutes;
 
+  @Column(columnDefinition = "json", name = "available_terms")
+  @JdbcTypeCode(SqlTypes.JSON)
+  @ColumnTransformer(read = "available_terms::json", write = "?::json")
+  private List<AvailableActivityTerm> availableTerms;
+
   ExtracurricularActivityConfiguration() {
   }
 
-  ExtracurricularActivityConfiguration(String name, String description, Type type, String location,
-                                       UUID teacherId, BigDecimal price, short durationInMinutes) {
+  ExtracurricularActivityConfiguration(String name, String description, ActivityType type, String location, UUID teacherId,
+                                       BigDecimal price, short durationInMinutes, List<Instant> availableTerms) {
     this.id = UUID.randomUUID();
     this.name = name;
     this.description = description;
@@ -42,40 +55,62 @@ class ExtracurricularActivityConfiguration {
     this.teacherId = teacherId;
     this.price = price;
     this.durationInMinutes = durationInMinutes;
+    this.availableTerms = availableTerms.stream()
+        .map(AvailableActivityTerm::new)
+        .collect(Collectors.toList());
   }
 
   ExtracurricularActivityDto dto() {
+    final List<Instant> availableTerms = this.availableTerms.stream()
+        .map(AvailableActivityTerm::getDate)
+        .collect(Collectors.toList());
     return new ExtracurricularActivityDto(
-        this.id, this.name, this.description, this.type.name(), this.location, this.teacherId, price, this.durationInMinutes
+        this.id, this.name, this.description, this.type.name(), this.location, this.teacherId, price,
+        this.durationInMinutes, availableTerms
     );
   }
 
-   UUID getId() {
+  void checkIfContainsAvailableTermFor(Instant termDate) {
+    boolean containsTerm = availableTerms.stream()
+        .anyMatch(term -> term.equals(termDate));
+    if (!containsTerm) {
+      throw new IllegalStateException();
+    }
+  }
+
+  UUID getId() {
     return id;
   }
 
-   String getName() {
+  String getName() {
     return name;
   }
 
-   String getDescription() {
+  String getDescription() {
     return description;
   }
 
-   Type getType() {
+  ActivityType getType() {
     return type;
   }
 
-   String getLocation() {
+  String getLocation() {
     return location;
   }
 
-   UUID getTeacherId() {
+  UUID getTeacherId() {
     return teacherId;
   }
 
-   short getDurationInMinutes() {
+  short getDurationInMinutes() {
     return durationInMinutes;
   }
 
+  BigDecimal getPrice() {
+    return price;
+  }
+
+  List<AvailableActivityTerm> getAvailableTerms() {
+    return availableTerms;
+  }
 }

@@ -4,6 +4,7 @@ import com.beesmart.management.activities.domain.ExtracurricularService;
 import com.beesmart.management.activities.dto.ExtracurricularActivityDto;
 import com.beesmart.management.activities.dto.JoinActivity;
 import com.beesmart.management.activities.dto.NewActivityDto;
+import com.beesmart.management.user.dto.LoggedUser;
 import com.beesmart.management.utils.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,13 +26,17 @@ class ExtracurricularController {
 
   @PostMapping(value = "/")
   ResponseEntity<ExtracurricularActivityDto> addActivityConfiguration(@RequestBody NewActivityDto newActivity) {
-    LoggedInUser.saveLoggedInUserId(UUID.fromString("e0785c90-f25f-11ed-a05b-0242ac120003"));
+    LoggedInUser.saveLoggedInUser(
+        new LoggedUser(UUID.fromString("e0785c90-f25f-11ed-a05b-0242ac120003"), LoggedUser.Role.TEACHER)
+    );
     return ResponseEntity.ok(service.configureNewActivity(newActivity));
   }
 
   @PutMapping(value = "/join/")
   ResponseEntity<Void> joinActivity(@RequestBody JoinActivity joinActivity) {
-    LoggedInUser.saveLoggedInUserId(UUID.fromString("0da7766f-14d9-4433-8462-ba05113f3b43"));
+    LoggedInUser.saveLoggedInUser(
+        new LoggedUser(UUID.fromString("0da7766f-14d9-4433-8462-ba05113f3b43"), LoggedUser.Role.STUDENT)
+    );
     service.joinActivity(joinActivity);
     return ResponseEntity.ok().build();
   }

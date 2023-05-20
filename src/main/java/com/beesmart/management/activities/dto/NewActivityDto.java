@@ -1,6 +1,8 @@
 package com.beesmart.management.activities.dto;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 
 public class NewActivityDto {
 
@@ -10,14 +12,17 @@ public class NewActivityDto {
   private String location;
   private BigDecimal price;
   private short durationInMinutes;
+  private List<Instant> availableTerms;
 
-  public NewActivityDto(String name, String description, TypeDto type, String location, BigDecimal price, short durationInMinutes) {
+  public NewActivityDto(String name, String description, TypeDto type, String location, BigDecimal price,
+                        short durationInMinutes, List<Instant> availableTerms) {
     this.name = name;
     this.description = description;
     this.type = type;
     this.location = location;
     this.price = price;
     this.durationInMinutes = durationInMinutes;
+    this.availableTerms = availableTerms;
   }
 
   public String getName() {
@@ -42,6 +47,10 @@ public class NewActivityDto {
 
   public short getDurationInMinutes() {
     return durationInMinutes;
+  }
+
+  public List<Instant> getAvailableTerms() {
+    return availableTerms;
   }
 
 }
