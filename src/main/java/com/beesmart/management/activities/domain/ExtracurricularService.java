@@ -2,6 +2,7 @@ package com.beesmart.management.activities.domain;
 
 import com.beesmart.management.activities.dto.*;
 import com.beesmart.management.user.dto.LoggedUser;
+import com.beesmart.management.user.dto.UserRoleDto;
 import com.beesmart.management.utils.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class ExtracurricularService {
 
   public List<ActivityWithTerms> getUserActivities() {
     LoggedUser loggedInUser = LoggedInUser.getLoggedInUser();
-    if (LoggedUser.Role.TEACHER == loggedInUser.getRole()) {
+    if (UserRoleDto.TEACHER == loggedInUser.getRole()) {
       return getTeacherActivities(loggedInUser.getId());
     } else {
       return getStudentActivities(loggedInUser.getId());

@@ -8,13 +8,16 @@ public final class LoggedInUser {
 
   private static LoggedUser savedLoggedInUser;
 
-  public static LoggedUser saveLoggedInUser(LoggedUser user) {
+  public static void saveLoggedInUser(LoggedUser user) {
     savedLoggedInUser = user;
-    return savedLoggedInUser;
   }
 
   public static LoggedUser getLoggedInUser() {
     return savedLoggedInUser;
+  }
+
+  public static void logOut() {
+    savedLoggedInUser = null;
   }
 
 }

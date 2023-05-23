@@ -4,15 +4,10 @@ import java.util.UUID;
 
 public class LoggedUser {
 
-  public enum Role {
-    STUDENT,
-    TEACHER
-  }
-
   UUID id;
-  Role role;
+  UserRoleDto role;
 
-  public LoggedUser(UUID id, Role role) {
+  public LoggedUser(UUID id, UserRoleDto role) {
     this.id = id;
     this.role = role;
   }
@@ -21,7 +16,7 @@ public class LoggedUser {
     return id;
   }
 
-  public Role getRole() {
+  public UserRoleDto getRole() {
     return role;
   }
 
