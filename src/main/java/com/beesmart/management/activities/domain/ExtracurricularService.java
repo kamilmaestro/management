@@ -1,9 +1,7 @@
 package com.beesmart.management.activities.domain;
 
-import com.beesmart.management.activities.dto.ExtracurricularActivityDto;
-import com.beesmart.management.activities.dto.JoinActivity;
-import com.beesmart.management.activities.dto.NewActivityDto;
-import com.beesmart.management.activities.dto.SearchActivitiesDto;
+import com.beesmart.management.activities.dto.*;
+import com.beesmart.management.user.dto.LoggedUser;
 import com.beesmart.management.utils.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,9 +51,10 @@ public class ExtracurricularService {
   public List<ExtracurricularActivityDto> search(SearchActivitiesDto search) {
     BigDecimal priceFrom = Optional.ofNullable(search.getPriceFrom()).orElse(BigDecimal.ZERO);
     BigDecimal priceTo = Optional.ofNullable(search.getPriceTo()).orElse(new BigDecimal(1000));
+    String name = Optional.ofNullable(search.getName()).orElse("");
     final List<ExtracurricularActivityConfiguration> searched = search.getType() != null ?
-        extracurricularRepository.search(search.getName(), search.getPriceFrom(), search.getPriceTo(), search.getType())
-        : extracurricularRepository.search(search.getName(), search.getPriceFrom(), search.getPriceTo());
+        extracurricularRepository.search(name, priceFrom, priceTo, search.getType())
+        : extracurricularRepository.search(name, priceFrom, priceTo);
 
     return searched
         .stream()
@@ -63,8 +62,46 @@ public class ExtracurricularService {
         .collect(Collectors.toList());
   }
 
-  public List<ExtracurricularActivityDto> getUserActivities() {
-    return null;
+  public List<ActivityWithTerms> getUserActivities() {
+    LoggedUser loggedInUser = LoggedInUser.getLoggedInUser();
+    if (LoggedUser.Role.TEACHER == loggedInUser.getRole()) {
+      return getTeacherActivities(loggedInUser.getId());
+    } else {
+      return getStudentActivities(loggedInUser.getId());
+    }
+  }
+
+  private List<ActivityWithTerms> getTeacherActivities(UUID teacherId) {
+    return extracurricularRepository.getTeacherActivities(teacherId).stream()
+        .map(this::getActivityWithAllTerms)
+        .toList();
+  }
+
+  private ActivityWithTerms getActivityWithAllTerms(ExtracurricularActivityConfiguration activity) {
+    ExtracurricularActivityDto dto = activity.dto();
+    List<TermDto> terms = activityTermRepository.findByActivityId(activity.getId()).stream()
+        .map(ActivityTerm::dto).toList();
+    return new ActivityWithTerms(dto, terms);
+  }
+
+  private List<ActivityWithTerms> getStudentActivities(UUID studentId) {
+    List<ActivityTerm> terms = activityTermRepository.findByStudentId(studentId);
+    List<UUID> activitiesIds = terms.stream().map(ActivityTerm::getActivityId)
+        .toList();
+
+    return extracurricularRepository.findAllById(activitiesIds).stream()
+        .map(activity -> {
+          List<ActivityTerm> activityTerms = terms.stream()
+              .filter(term -> term.getActivityId().equals(activity.getId()))
+              .toList();
+          return getActivityWithSpecifiedTerms(activity, activityTerms);
+        }).toList();
+  }
+
+  private ActivityWithTerms getActivityWithSpecifiedTerms(ExtracurricularActivityConfiguration activity,
+                                                          List<ActivityTerm> terms) {
+    List<TermDto> termDtos = terms.stream().map(ActivityTerm::dto).toList();
+    return new ActivityWithTerms(activity.dto(), termDtos);
   }
 
 }

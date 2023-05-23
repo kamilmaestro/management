@@ -1,5 +1,7 @@
 package com.beesmart.management.activities.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.time.Instant;
 import java.util.Objects;
 
@@ -8,11 +10,19 @@ class AvailableActivityTerm {
 
   private Instant date;
 
+  AvailableActivityTerm() {
+  }
+
+  @JsonCreator
   AvailableActivityTerm(Instant date) {
     this.date = date;
   }
 
-  Instant getDate() {
+  public void setDate(Instant date) {
+    this.date = date;
+  }
+
+  public Instant getDate() {
     return date;
   }
 

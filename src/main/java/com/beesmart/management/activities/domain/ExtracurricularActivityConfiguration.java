@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 import org.hibernate.annotations.Type;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,9 +38,7 @@ class ExtracurricularActivityConfiguration {
   private BigDecimal price;
   private short durationInMinutes;
 
-  @Column(columnDefinition = "json", name = "available_terms")
-  @JdbcTypeCode(SqlTypes.JSON)
-  @ColumnTransformer(read = "available_terms::json", write = "?::json")
+  @Convert(converter = JsonListConverter.class)
   private List<AvailableActivityTerm> availableTerms;
 
   ExtracurricularActivityConfiguration() {
@@ -55,9 +54,10 @@ class ExtracurricularActivityConfiguration {
     this.teacherId = teacherId;
     this.price = price;
     this.durationInMinutes = durationInMinutes;
-    this.availableTerms = availableTerms.stream()
+    this.availableTerms = availableTerms != null ? availableTerms.stream()
         .map(AvailableActivityTerm::new)
-        .collect(Collectors.toList());
+        .collect(Collectors.toList())
+        : new ArrayList<>();
   }
 
   ExtracurricularActivityDto dto() {

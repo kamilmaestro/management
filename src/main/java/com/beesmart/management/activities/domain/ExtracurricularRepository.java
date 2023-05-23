@@ -25,4 +25,10 @@ interface ExtracurricularRepository extends JpaRepository<ExtracurricularActivit
                                                     @Param("priceFrom") BigDecimal priceFrom,
                                                     @Param("priceTo") BigDecimal priceTo);
 
+  @Query("SELECT a FROM ExtracurricularActivityConfiguration a WHERE a.teacherId = :teacherId")
+  List<ExtracurricularActivityConfiguration> getTeacherActivities(@Param("teacherId") UUID teacherId);
+
+  @Query("SELECT a FROM ExtracurricularActivityConfiguration a WHERE a.teacherId = :teacherId")
+  List<ExtracurricularActivityConfiguration> getStudentActivities(@Param("teacherId") UUID teacherId);
+
 }

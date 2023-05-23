@@ -1,9 +1,7 @@
 package com.beesmart.management.activities.infrastructure;
 
 import com.beesmart.management.activities.domain.ExtracurricularService;
-import com.beesmart.management.activities.dto.ExtracurricularActivityDto;
-import com.beesmart.management.activities.dto.JoinActivity;
-import com.beesmart.management.activities.dto.NewActivityDto;
+import com.beesmart.management.activities.dto.*;
 import com.beesmart.management.user.dto.LoggedUser;
 import com.beesmart.management.utils.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/extracurricular")
@@ -39,6 +38,21 @@ class ExtracurricularController {
     );
     service.joinActivity(joinActivity);
     return ResponseEntity.ok().build();
+  }
+
+  @PostMapping(value = "/search/")
+  ResponseEntity<List<ExtracurricularActivityDto>> search(@RequestBody SearchActivitiesDto search) {
+    return ResponseEntity.ok(service.search(search));
+  }
+
+  @GetMapping(value = "/")
+  ResponseEntity<List<ActivityWithTerms>> getActivities() {
+    if (LoggedInUser.getLoggedInUser() == null) {
+      LoggedInUser.saveLoggedInUser(
+          new LoggedUser(UUID.fromString("e0785c90-f25f-11ed-a05b-0242ac120003"), LoggedUser.Role.TEACHER)
+      );
+    }
+    return ResponseEntity.ok(service.getUserActivities());
   }
 
 }

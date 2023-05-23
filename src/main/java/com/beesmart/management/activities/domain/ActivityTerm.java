@@ -1,5 +1,6 @@
 package com.beesmart.management.activities.domain;
 
+import com.beesmart.management.activities.dto.TermDto;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -34,6 +35,14 @@ class ActivityTerm {
   static ActivityTerm joinTerm(Instant startAt, ExtracurricularActivityConfiguration configuration, UUID studentId) {
     final Instant endAt = startAt.plus(configuration.getDurationInMinutes(), ChronoUnit.MINUTES);
     return new ActivityTerm(UUID.randomUUID(), startAt, endAt, configuration.getId(), studentId);
+  }
+
+  UUID getActivityId() {
+    return activityId;
+  }
+
+  TermDto dto() {
+    return new TermDto(id, startAt, endAt, activityId, studentId);
   }
 
 }
