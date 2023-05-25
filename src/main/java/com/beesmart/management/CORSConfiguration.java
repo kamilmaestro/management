@@ -26,8 +26,8 @@ class CORSConfiguration {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
     config.setAllowedOrigins(singletonList("http://localhost:5173/"));
-    config.setAllowedMethods(singletonList(""));
-    config.setAllowedHeaders(singletonList(""));
+    config.setAllowedMethods(singletonList("*"));
+    config.setAllowedHeaders(singletonList("*"));
     config.setExposedHeaders(EXPOSED_HEADERS);
     source.registerCorsConfiguration("/**", config);
     FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
