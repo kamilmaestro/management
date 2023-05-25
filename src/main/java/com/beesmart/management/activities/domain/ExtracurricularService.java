@@ -74,15 +74,15 @@ public class ExtracurricularService {
 
   private List<ActivityWithTerms> getTeacherActivities(UUID teacherId) {
     return extracurricularRepository.getTeacherActivities(teacherId).stream()
-        .map(this::getActivityWithAllTerms)
+        .map(this::getActivityWithAllTermsForTeacher)
         .toList();
   }
 
-  private ActivityWithTerms getActivityWithAllTerms(ExtracurricularActivityConfiguration activity) {
+  private ActivityWithTerms getActivityWithAllTermsForTeacher(ExtracurricularActivityConfiguration activity) {
     ExtracurricularActivityDto dto = activity.dto();
     List<TermDto> terms = activityTermRepository.findByActivityId(activity.getId()).stream()
         .map(ActivityTerm::dto).toList();
-    return new ActivityWithTerms(dto, terms);
+    return new ActivityWithTerms(dto, terms, true);
   }
 
   private List<ActivityWithTerms> getStudentActivities(UUID studentId) {
@@ -95,14 +95,14 @@ public class ExtracurricularService {
           List<ActivityTerm> activityTerms = terms.stream()
               .filter(term -> term.getActivityId().equals(activity.getId()))
               .toList();
-          return getActivityWithSpecifiedTerms(activity, activityTerms);
+          return getActivityWithSpecifiedTermsForStudent(activity, activityTerms);
         }).toList();
   }
 
-  private ActivityWithTerms getActivityWithSpecifiedTerms(ExtracurricularActivityConfiguration activity,
-                                                          List<ActivityTerm> terms) {
+  private ActivityWithTerms getActivityWithSpecifiedTermsForStudent(ExtracurricularActivityConfiguration activity,
+                                                                    List<ActivityTerm> terms) {
     List<TermDto> termDtos = terms.stream().map(ActivityTerm::dto).toList();
-    return new ActivityWithTerms(activity.dto(), termDtos);
+    return new ActivityWithTerms(activity.dto(), termDtos, false);
   }
 
 }
