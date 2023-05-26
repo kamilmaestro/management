@@ -17,7 +17,7 @@ interface ExtracurricularRepository extends JpaRepository<ExtracurricularActivit
   List<ExtracurricularActivityConfiguration> search(@Param("name") String name,
                                                     @Param("priceFrom") BigDecimal priceFrom,
                                                     @Param("priceTo") BigDecimal priceTo,
-                                                    @Param("type") TypeDto type);
+                                                    @Param("type") ExtracurricularActivityConfiguration.ActivityType type);
 
   @Query("SELECT a FROM ExtracurricularActivityConfiguration a " +
       "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) OR ( a.price >= :priceFrom AND a.price <= :priceTo )")

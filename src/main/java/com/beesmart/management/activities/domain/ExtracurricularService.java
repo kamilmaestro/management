@@ -54,7 +54,7 @@ public class ExtracurricularService {
     BigDecimal priceTo = Optional.ofNullable(search.getPriceTo()).orElse(new BigDecimal(1000));
     String name = Optional.ofNullable(search.getName()).orElse("");
     final List<ExtracurricularActivityConfiguration> searched = search.getType() != null ?
-        extracurricularRepository.search(name, priceFrom, priceTo, search.getType())
+        extracurricularRepository.search(name, priceFrom, priceTo, ExtracurricularActivityConfiguration.ActivityType.valueOf(search.getType().name()))
         : extracurricularRepository.search(name, priceFrom, priceTo);
 
     return searched
