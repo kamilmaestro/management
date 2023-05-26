@@ -63,12 +63,12 @@ public class ExtracurricularService {
         .collect(Collectors.toList());
   }
 
-  public List<ActivityWithTerms> getUserActivities() {
+  public ActivityTermsList getUserActivities() {
     LoggedUser loggedInUser = LoggedInUser.getLoggedInUser();
     if (UserRoleDto.TEACHER == loggedInUser.getRole()) {
-      return getTeacherActivities(loggedInUser.getId());
+      return new ActivityTermsList(getTeacherActivities(loggedInUser.getId()), true);
     } else {
-      return getStudentActivities(loggedInUser.getId());
+      return new ActivityTermsList(getStudentActivities(loggedInUser.getId()), false);
     }
   }
 
@@ -82,7 +82,7 @@ public class ExtracurricularService {
     ExtracurricularActivityDto dto = activity.dto();
     List<TermDto> terms = activityTermRepository.findByActivityId(activity.getId()).stream()
         .map(ActivityTerm::dto).toList();
-    return new ActivityWithTerms(dto, terms, true);
+    return new ActivityWithTerms(dto, terms);
   }
 
   private List<ActivityWithTerms> getStudentActivities(UUID studentId) {
@@ -102,7 +102,7 @@ public class ExtracurricularService {
   private ActivityWithTerms getActivityWithSpecifiedTermsForStudent(ExtracurricularActivityConfiguration activity,
                                                                     List<ActivityTerm> terms) {
     List<TermDto> termDtos = terms.stream().map(ActivityTerm::dto).toList();
-    return new ActivityWithTerms(activity.dto(), termDtos, false);
+    return new ActivityWithTerms(activity.dto(), termDtos);
   }
 
 }

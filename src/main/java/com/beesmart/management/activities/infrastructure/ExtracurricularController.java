@@ -40,7 +40,7 @@ class ExtracurricularController {
   }
 
   @GetMapping(value = "/")
-  ResponseEntity<List<ActivityWithTerms>> getActivities() {
+  ResponseEntity<ActivityTermsList> getActivities() {
     return ResponseEntity.ok(service.getUserActivities());
   }
 
